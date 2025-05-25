@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KILLRS-Scripts</title>
+
+  <!-- استيراد خط VIP Hala -->
+  <style>
+    @font-face {
+      font-family: 'VIP Hala';
+      src: url('https://fonts.cdnfonts.com/s/16444/VIPHala.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'VIP Hala', sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      background: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      user-select: none;
+      color: #000000;
+    }
+#language-select {
+  text-align: center;
+}
+
+.lang-buttons {
+  display: flex;
+  justify-content: center;  /* توسيط الأزرار أفقياً */
+  gap: 20px;                /* مسافة بين الأزرار */
+  margin-top: 10px;
+}
+
+.lang-btn {
+  padding: 10px 25px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #333;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.lang-btn:hover {
+  background-color: #555;
+}
+
+   .lang-btn {
+  font-size: 1.5rem;
+  padding: 15px 50px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 0.1);
+  background: #111111;  /* أسود غامق */
+  color: white;
+}
+
+    .lang-btn:hover {
+      filter: brightness(1.2);
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgb(118 75 162 / 0.6);
+    }
+
+  #main-site {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  padding: 20px;
+  background: #000000; /* خلفية سوداء صلبة */
+  color: #ffffff; /* نص أبيض */
+}
+
+   #site-name {
+  font-size: 3rem;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.9); /* لون حليبي */
+  text-shadow: 2px 2px 8px rgba(255, 255, 255, 0.4); /* لمعان خفيف */
+  margin-bottom: 30px;
+  text-align: center;
+}
+    
+
+.card {
+  background: linear-gradient(135deg, #2f2f2f, #1e1e1e); /* رصاصي غامق */
+  border-radius: 25px;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 600px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+  color: white;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  
+  /* إضافة طبقة خطوط متكررة */
+  background-image: 
+    linear-gradient(135deg, #2f2f2f, #1e1e1e), /* الخلفية الأساسية */
+    repeating-linear-gradient(
+      135deg,
+      rgba(200, 200, 200, 0.05), /* لون رصاصي فاتح وشفاف */
+      rgba(200, 200, 200, 0.05) 2px,
+      transparent 2px,
+      transparent 8px
+    );
+  background-size: 100% 100%, 40px 40px; /* حجم النمط الثاني (الخطوط) */
+  animation: moveLines 5s linear infinite;
+}
+
+@media (max-width: 480px) {
+  .card {
+    max-width: 95%;  /* تقليل العرض ليشغل تقريباً كل عرض الشاشة مع حواف */
+    padding: 20px 15px; /* تقليل البادينغ لتناسب الشاشات الصغيرة */
+    gap: 15px; /* تقليل الفجوة بين العناصر داخل الكارد */
+  }
+}
+
+    
+/* اللمعة */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0)
+  );
+  pointer-events: none;
+  z-index: 1;
+  border-radius: 25px;
+}
+
+/* حركة الخطوط */
+@keyframes moveLines {
+  0% {
+    background-position: 0 0, 0 0;
+  }
+  100% {
+    background-position: 0 0, 40px 40px;
+  }
+}
+
+#buttons-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 20px 30px; /* تباعد عمودي وأفقي معقول */
+  width: 100%; /* عرض كامل الحاوية الأب */
+  max-width: 400px; /* حد أقصى للعرض */
+  direction: rtl;
+  margin: 0 auto; /* تمركز الحاوية */
+}
+
+button.action-btn {
+  font-size: 1rem;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  color: white;
+  padding: 12px 15px; /* زيادة البادينغ ليكون متناسب */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  white-space: nowrap;
+  min-width: 140px; /* أقل عرض لكل زر */
+  box-sizing: border-box;
+}
+
+/* الألوان والتأثيرات كما هي */
+button.action-btn:nth-child(1) {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  box-shadow: 0 4px 15px rgb(102 126 234 / 0.7);
+}
+button.action-btn:nth-child(1):hover {
+  transform: scale(1.1) rotate(3deg);
+  box-shadow: 0 8px 25px rgb(118 75 162 / 0.9);
+}
+
+button.action-btn:nth-child(2) {
+  background: linear-gradient(45deg, #43cea2, #185a9d);
+  box-shadow: 0 4px 15px rgb(67 206 162 / 0.7);
+}
+button.action-btn:nth-child(2):hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 30px rgb(24 90 157 / 0.9);
+}
+
+/* أزرار 3 و 4 تبقى بنفس التنسيق اللي عندك */
+button.action-btn:nth-child(3) {
+  background: linear-gradient(45deg, #f7971e, #ffd200);
+  box-shadow: 0 4px 15px rgb(247 151 30 / 0.7);
+}
+button.action-btn:nth-child(3):hover {
+  transform: scale(1.1) translateX(10px);
+  box-shadow: 0 10px 30px rgb(255 210 0 / 0.9);
+}
+
+button.action-btn:nth-child(4) {
+  background: linear-gradient(45deg, #f54ea2, #ff7676);
+  box-shadow: 0 4px 15px rgb(245 78 162 / 0.7);
+}
+button.action-btn:nth-child(4):hover {
+  transform: rotate(-5deg) scale(1.05);
+  box-shadow: 0 10px 30px rgb(255 118 118 / 0.9);
+}
+
+    @media (max-width: 480px) {
+  #buttons-container {
+    grid-template-columns: repeat(2, 1fr); /* صفين في العرض */
+    max-width: 100%; /* يملا العرض بالكامل */
+    gap: 15px 20px; /* تقلل التباعد شوي عشان يناسب الموبايل */
+  }
+
+  button.action-btn {
+    min-width: auto; /* تلغي الحد الأدنى للعرض عشان يضبط حسب الشبكة */
+    padding: 10px 12px; /* تصغير البادينغ شوي */
+    font-size: 0.9rem; /* تصغير الخط */
+  }
+}
+
+
+    .telegram-button {
+      margin-top: 15px;
+      background-color: #000;
+      color: #fff;
+      text-decoration: none;
+      font-size: 1rem;
+      padding: 12px 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .telegram-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    #footer-text {
+      margin-top: 25px;
+      font-size: 1rem;
+      color: #444;
+      text-align: center;
+      max-width: 700px;
+      font-weight: 500;
+      line-height: 1.5;
+      padding: 0 10px;
+    }
+
+    @media (max-width: 480px) {
+      #site-name {
+        font-size: 2.2rem;
+      }
+
+      .lang-btn {
+        font-size: 1.2rem;
+        padding: 10px 30px;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .telegram-button {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- اختيار اللغة -->
+<div id="language-select">
+  <h2> Choose | اختار </h2>
+  <div class="lang-buttons">
+    <button class="lang-btn" data-lang="en">English</button>
+    <button class="lang-btn" data-lang="ar">عربي</button>
+  </div>
+</div>
+
+
+  <!-- الصفحة الرئيسية -->
+  <div id="main-site">
+    <div id="site-name">GHOST_KILLR</div>
+
+    <div class="card">
+      <div id="buttons-container">
+        <button class="action-btn" id="btn1"></button>
+        <button class="action-btn" id="btn2"></button>
+        <button class="action-btn" id="btn3"></button>
+        <button class="action-btn" id="btn4"></button>
+      </div>
+      <a class="telegram-button" href="https://t.me/ka_killr" target="_blank">KA_KILLR</a>
+    </div>
+
+    <div id="footer-text"></div>
+  </div>
+
+<script>
+  const langSelectDiv = document.getElementById('language-select');
+  const mainSiteDiv = document.getElementById('main-site');
+
+  const texts = {
+    en: {
+      buttons: [
+        "Delta | دلتا",
+        "Krnl | كارنل",
+        "Codex | كودكس",
+        "Arsious | ارسيوس"
+      ],
+      footer: "Welcome to KILLRS-Hacks! Here you can find your favorite Hacks easily and safely. Choose a section above to get started."
+    },
+    ar: {
+      buttons: [
+        "دلتا | Delta",
+        "كارنل | Krnl",
+        "كودكس | Codex",
+        "ارسيــوس | Arsious"
+      ],
+      footer: "مرحباً بك في KILLRS-Hacks! هنا يمكنك إيجاد هاكات المفضلة لديك بسهولة وأمان. اختر القسم أعلاه للبدء."
+    }
+  };
+
+  const urls = [
+    "https://www.mediafire.com/file/dzy438ycmwq7e3p/Delta%255B_KA_KILLR_%255D-672.apk/file?dkey=5olzrjlxfhm&r=179",
+    "https://www.mediafire.com/file/l87gfd9qqnobisy/%255Btg%2540tg%2540killr%255D_KRNL_2.673.710.apk/file?dkey=kaxwl2f50pn&r=611",
+    "https://www.mediafire.com/file/510pqvsjyav6xrk/Codex_v2.672_%255B%2540KA_KILLR%255D.apk/file",
+    "https://www.mediafire.com/file/p2ep59h1fk7ya3g/%255BKA_Killr%255D_AXNEO_1.6.8.apk/file"
+  ];
+
+  const buttons = [
+    document.getElementById('btn1'),
+    document.getElementById('btn2'),
+    document.getElementById('btn3'),
+    document.getElementById('btn4')
+  ];
+
+  // ✅ ربط كل زر برابطه
+  buttons.forEach((btn, index) => {
+    btn.addEventListener('click', () => {
+      window.location.href = urls[index];
+    });
+  });
+
+  const footerText = document.getElementById('footer-text');
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.getAttribute('data-lang');
+      langSelectDiv.style.display = 'none';
+      mainSiteDiv.style.display = 'flex';
+
+      for(let i=1; i<=4; i++) {
+        document.getElementById('btn'+i).textContent = texts[lang].buttons[i-1];
+        document.getElementById('btn'+i).style.direction = lang === 'ar' ? 'rtl' : 'ltr';
+        document.getElementById('btn'+i).style.textAlign = 'center';
+      }
+
+      const footer = document.getElementById('footer-text');
+      footer.textContent = texts[lang].footer;
+      footer.style.direction = lang === 'ar' ? 'rtl' : 'ltr';
+      footer.style.textAlign = 'center';
+      footer.style.fontWeight = lang === 'ar' ? '600' : '500';
+    });
+  });
+</script>
