@@ -1,22 +1,16 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html><html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>موقع شات عربي مع مالك وحظر</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>موقع شات عربي</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Cairo&display=swap');
   body {
     font-family: 'Cairo', sans-serif;
     margin: 0; padding: 0;
-    height: 100vh;
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
-    background-size: 400% 400%;
+    background: linear-gradient(270deg, #6a11cb, #2575fc, #ff6ec4);
+    background-size: 600% 600%;
     animation: gradientShift 20s ease infinite;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    direction: rtl;
   }
   @keyframes gradientShift {
     0% {background-position: 0% 50%;}
@@ -25,372 +19,196 @@
   }
   .container {
     background: #fff;
-    padding: 25px 35px;
+    padding: 30px 40px;
     border-radius: 20px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    width: 370px;
+    width: 360px;
+    margin: 30px auto;
     text-align: center;
-    position: relative;
   }
-  h1 {
-    margin-bottom: 20px;
-    color: #6a11cb;
-  }
-  input[type="text"], input[type="password"], input[type="file"] {
+  input, button {
     width: 100%;
-    padding: 12px 15px;
-    margin: 10px 0 15px 0;
-    border-radius: 30px;
+    margin: 10px 0;
+    padding: 12px;
+    border-radius: 25px;
     border: 2px solid #6a11cb;
-    font-size: 1rem;
     outline: none;
-    transition: border-color 0.3s ease;
-    box-sizing: border-box;
-  }
-  input[type="text"]:focus, input[type="password"]:focus, input[type="file"]:focus {
-    border-color: #2575fc;
-    box-shadow: 0 0 8px #6a11cbaa;
+    font-size: 1rem;
   }
   button {
-    width: 100%;
-    padding: 12px;
     background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: white;
+    cursor: pointer;
     border: none;
-    border-radius: 30px;
-    color: white;
-    font-size: 1.1rem;
-    cursor: pointer;
-    box-shadow: 0 5px 15px rgba(101, 67, 201, 0.7);
-    transition: background 0.4s ease;
-    margin-bottom: 10px;
   }
-  button:hover {
-    background: linear-gradient(135deg, #2575fc, #6a11cb);
-  }
-  p {
-    margin-top: 15px;
-    font-size: 0.9rem;
-  }
-  a {
-    color: #6a11cb;
-    text-decoration: none;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  .error {
-    color: #e74c3c;
-    margin-top: 10px;
-    font-weight: bold;
-  }
-
-  #chat-container {
-    max-width: 700px;
-    margin: 30px auto;
-    padding: 20px;
-    background: #fff;
-    border-radius: 20px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    display: none;
-    flex-direction: column;
-    height: 80vh;
-    position: relative;
-  }
-  #chat-header {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin-bottom: 15px;
-    gap: 15px;
-  }
-  #chat-header img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid #6a11cb;
-  }
-  #chat-header #display-name {
-    font-weight: bold;
-    font-size: 1.2rem;
-    color: #6a11cb;
-  }
-  #chat-header button {
-    width: auto;
-    padding: 8px 15px;
-    font-size: 0.9rem;
-    border-radius: 20px;
-    box-shadow: none;
-  }
-  #messages {
-    list-style: none;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 15px;
-    height: 65%;
-    overflow-y: auto;
-    margin-bottom: 15px;
-  }
-  #messages li {
-    padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .self {
-    background-color: #d1ffd6;
-    justify-content: flex-end;
-    text-align: right;
-  }
-  .other {
-    background-color: #d6eaff;
-    justify-content: flex-start;
-    text-align: left;
-  }
-  .msg-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid #6a11cb;
-    object-fit: cover;
-  }
-  form {
-    display: flex;
-    gap: 10px;
-  }
-  input#message {
-    flex: 1;
-    padding: 12px 15px;
-    border: 2px solid #6a11cb;
-    border-radius: 30px;
-    outline: none;
-  }
-  input#message:focus {
-    border-color: #2575fc;
-    box-shadow: 0 0 8px #6a11cbaa;
-  }
-
-  <script>
-  const messagesList = document.getElementById("messages");
-
-  // تحميل الرسائل القديمة من localStorage عند فتح الشات
-  function loadMessages() {
-    const saved = localStorage.getItem("chat-messages");
-    if (saved) {
-      messagesList.innerHTML = saved;
-    }
-  }
-
-  // حفظ الرسائل كل مرة تتغير
-  function saveMessages() {
-    localStorage.setItem("chat-messages", messagesList.innerHTML);
-  }
-
-  // نداء هذه الدوال في الوقت المناسب
-  window.addEventListener("DOMContentLoaded", loadMessages);
-
-  // مثال عند إرسال رسالة (تضيف هذا داخل كود الإرسال):
-  // messagesList.appendChild(newMessage);
-  // saveMessages();
-
-  // لو عندك دالة اسمها addMessage(content, self)، ضيف داخلها:
-  // saveMessages(); بعد ما تضيف الرسالة
-</script>
-  /* مودال الصورة */
-  #avatar-modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
-    max-width: 80vw;
-    max-height: 80vh;
-    overflow: auto;
-    padding: 10px;
-  }
-  #avatar-modal img {
-    max-width: 100%;
-    max-height: 70vh;
-    border-radius: 15px;
-  }
-  #avatar-modal button {
-    margin-top: 10px;
-    background: #e74c3c;
-  }
-
-  /* مودال الإبلاغ */
-  #report-modal {
-    display: none;
-    position: fixed;
-    z-index: 1100;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.4);
-    max-width: 300px;
-    padding: 15px;
-    text-align: center;
-  }
-  #report-modal button {
-    margin: 5px;
-    padding: 10px 15px;
-    border-radius: 15px;
-  }
-
-  /* مودال إعدادات المالك */
-  #owner-modal {
-    display: none;
-    position: fixed;
-    z-index: 1200;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    max-width: 400px;
-    max-height: 80vh;
-    overflow-y: auto;
-    padding: 20px;
-  }
-  #owner-modal h2 {
-    margin-top: 0;
-    color: #6a11cb;
-  }
-  #owner-modal ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  #owner-modal li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 8px 0;
-    padding: 8px 10px;
-    border-radius: 10px;
-    background: #f3f3f3;
-  }
-  #owner-modal button {
-    padding: 6px 10px;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-  }
-  #owner-modal .ban-btn {
-    background-color: #e74c3c;
-    color: white;
-  }
-  #owner-modal .allow-btn {
-    background-color: #27ae60;
-    color: white;
-  }
-
-  /* مودال إعدادات المستخدم */
-  #user-settings-modal {
-    display: none;
-    position: fixed;
-    z-index: 1100;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.4);
-    max-width: 350px;
-    padding: 20px;
-  }
-  #user-settings-modal label {
-    display: block;
-    margin: 10px 0 5px 0;
-    font-weight: bold;
-  }
-  #user-settings-modal input[type="text"] {
-    width: 100%;
-    padding: 8px 12px;
-    border-radius: 15px;
-    border: 2px solid #6a11cb;
-    outline: none;
-    box-sizing: border-box;
-  }
-  #user-settings-modal input[type="file"] {
-    margin-top: 5px;
-  }
-  #user-settings-modal button {
-    margin-top: 15px;
-  }
-
-  /* زر إعدادات فوق الشات */
-  #settings-btn {
-    background: #6a11cb;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 15px;
-    cursor: pointer;
-    font-weight: bold;
-    box-shadow: 0 0 10px #6a11cbaa;
-  }
-
-  /* نص المالك الدائم */
-  #owner-label {
+  .error { color: red; }
+  #owner-tag {
     position: fixed;
     top: 10px;
     left: 10px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    color: #fff;
-    opacity: 0.3;
-    user-select: none;
-    pointer-events: none;
-    animation: colorShift 10s linear infinite;
-    z-index: 1300;
-    white-space: nowrap;
+    background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+    background-size: 800% 800%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow 5s ease infinite;
+    font-size: 14px;
+    opacity: 0.6;
   }
-  @keyframes colorShift {
-    0% { color: #ff004c; }
-    25% { color: #ff7300; }
-    50% { color: #ffee00; }
-    75% { color: #00ff66; }
-    100% { color: #004cff; }
+  @keyframes rainbow {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
   }
-
-  /* رسالة التبند الحمراء */
-  #ban-notification {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #e74c3c;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-weight: bold;
-    box-shadow: 0 0 10px #e74c3caa;
+  #chat-container {
     display: none;
-    z-index: 1400;
+    max-width: 600px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 20px;
+  }
+  #messages {
+    height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+  }
+  .msg {margin: 5px 0; padding: 10px; border-radius: 10px;}
+  .self {background-color: #e0ffe0; text-align: right;}
+  .other {background-color: #e0e0ff; text-align: left;}
+  .ban-message {
+    background: #ffcccc;
+    color: red;
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 10px 0;
+    font-weight: bold;
   }
 </style>
 </head>
 <body>
+<div id="owner-tag">المالك: رضا | تلي: @lJJ2l</div><div class="container" id="register-form">
+  <h2>إنشاء حساب</h2>
+  <input type="text" id="reg-name" placeholder="الاسم">
+  <input type="text" id="reg-user" placeholder="اسم المستخدم">
+  <input type="password" id="reg-pass" placeholder="كلمة السر">
+  <input type="password" id="reg-pass2" placeholder="تأكيد كلمة السر">
+  <input type="file" id="reg-avatar">
+  <button onclick="register()">سجّل</button>
+  <p>لديك حساب؟ <a href="#" onclick="toggleForms('login')">تسجيل دخول</a></p>
+  <p class="error" id="reg-error"></p>
+</div><div class="container" id="login-form" style="display:none">
+  <h2>تسجيل دخول</h2>
+  <input type="text" id="login-user" placeholder="اسم المستخدم">
+  <input type="password" id="login-pass" placeholder="كلمة السر">
+  <button onclick="login()">دخول</button>
+  <p>ليس لديك حساب؟ <a href="#" onclick="toggleForms('register')">أنشئ حساب</a></p>
+  <p class="error" id="login-error"></p>
+</div><div id="chat-container">
+  <h2>الشات</h2>
+  <div id="messages"></div>
+  <input type="text" id="msg-input" placeholder="اكتب رسالة">
+  <button onclick="sendMessage()">إرسال</button>
+  <button onclick="logout()">تسجيل خروج</button>
+</div><script>
+let users = JSON.parse(localStorage.getItem('users') || '{}');
+let messages = JSON.parse(localStorage.getItem('messages') || '[]');
+let bans = JSON.parse(localStorage.getItem('bans') || '[]');
+let currentUser = null;
 
-<!-- نص المالك الدائم -->
-<div id="owner-label">المالك: رضا &nbsp;&nbsp; تلي: @lJJ2l</div>
+function toggleForms(mode) {
+  document.getElementById('register-form').style.display = mode === 'register' ? 'block' : 'none';
+  document.getElementById('login-form').style.display = mode === 'login' ? 'block' : 'none';
+}
 
-<!-- رسالة التبند -->
-<div id="ban-notification"></div>
+function register() {
+  let name = document.getElementById('reg-name').value;
+  let user = document.getElementById('reg-user').value;
+  let pass = document.getElementById('reg-pass').value;
+  let pass2 = document.getElementById('reg-pass2').value;
+  let avatar = document.getElementById('reg-avatar').files[0];
+  let error = document.getElementById('reg-error');
+  if (!name || !user || !pass || !pass2 || !avatar) {
+    error.textContent = "يرجى ملء جميع الحقول ورفع صورة.";
+    return;
+  }
+  if (pass !== pass2) {
+    error.textContent = "كلمتا السر غير متطابقتين.";
+    return;
+  }
+  let reader = new FileReader();
+  reader.onload = () => {
+    users[user] = {name, pass, avatar: reader.result};
+    localStorage.setItem('users', JSON.stringify(users));
+    alert("تم التسجيل بنجاح.");
+    toggleForms('login');
+  }
+  reader.readAsDataURL(avatar);
+}
 
-<!-- تسجيل دخول -->
-<div class="container" id="login-form">
-  <h1>تسجيل الدخول</h1>
-  <input type="text" id="login-username" placeholder="اسم المستخدم" required />
-  <input type="password" id
+function login() {
+  let user = document.getElementById('login-user').value;
+  let pass = document.getElementById('login-pass').value;
+  let error = document.getElementById('login-error');
+  if (!users[user] || users[user].pass !== pass) {
+    error.textContent = "بيانات خاطئة.";
+    return;
+  }
+  currentUser = user;
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('chat-container').style.display = 'block';
+  renderMessages();
+}
 
+function sendMessage() {
+  let text = document.getElementById('msg-input').value.trim();
+  if (!text) return;
+  let msg = {user: currentUser, text, time: Date.now()};
+  messages.push(msg);
+  localStorage.setItem('messages', JSON.stringify(messages));
+  document.getElementById('msg-input').value = '';
+  renderMessages();
+}
+
+function renderMessages() {
+  let msgDiv = document.getElementById('messages');
+  msgDiv.innerHTML = '';
+  for (let m of messages) {
+    if (bans.includes(m.user)) continue;
+    let div = document.createElement('div');
+    div.className = 'msg ' + (m.user === currentUser ? 'self' : 'other');
+    div.textContent = users[m.user].name + ": " + m.text;
+    div.onclick = () => handleReport(m.user);
+    msgDiv.appendChild(div);
+  }
+}
+
+function handleReport(targetUser) {
+  if (targetUser === currentUser) return;
+  if (confirm("هل تريد الإبلاغ عن " + users[targetUser].name + "؟")) {
+    if (currentUser === 'رضا' && users['رضا'].pass === 'aaaa') {
+      if (confirm("تريد تبنيد هذا المستخدم؟")) {
+        bans.push(targetUser);
+        localStorage.setItem('bans', JSON.stringify(bans));
+        messages.push({user: 'SYSTEM', text: `تم تبنيد ${users[targetUser].name} من قبل المالك رضا`, time: Date.now(), banNotice: true});
+        setTimeout(() => {
+          messages = messages.filter(m => !m.banNotice);
+          localStorage.setItem('messages', JSON.stringify(messages));
+          renderMessages();
+        }, 300000);
+        renderMessages();
+      }
+    } else {
+      alert("تم إرسال بلاغك إلى المالك.");
+    }
+  }
+}
+
+function logout() {
+  currentUser = null;
+  location.reload();
+}
+</script></body>
+</html>
