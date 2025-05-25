@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>موقع شات عربي</title>
+<title>موقع شات عربي مع أفتار وإعدادات</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Cairo&display=swap');
   body {
@@ -34,7 +34,7 @@
     margin-bottom: 20px;
     color: #6a11cb;
   }
-  input[type="text"], input[type="password"] {
+  input[type="text"], input[type="password"], select {
     width: 100%;
     padding: 12px 15px;
     margin: 10px 0 20px 0;
@@ -43,8 +43,13 @@
     font-size: 1rem;
     outline: none;
     transition: border-color 0.3s ease;
+    box-sizing: border-box;
   }
-  input[type="text"]:focus, input[type="password"]:focus {
+  input[type="file"] {
+    margin: 10px 0 20px 0;
+    width: 100%;
+  }
+  input[type="text"]:focus, input[type="password"]:focus, select:focus {
     border-color: #2575fc;
     box-shadow: 0 0 8px #6a11cbaa;
   }
@@ -88,6 +93,36 @@
     display: none;
     flex-direction: column;
     height: 80vh;
+    position: relative;
+  }
+  #chat-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  #user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid #6a11cb;
+    transition: box-shadow 0.3s ease;
+  }
+  #user-avatar:hover {
+    box-shadow: 0 0 10px #6a11cbaa;
+  }
+  #username-display {
+    font-weight: bold;
+    font-size: 1.3rem;
+    flex-grow: 1;
+  }
+  #country-flag {
+    width: 30px;
+    height: 20px;
+    border-radius: 3px;
+    border: 1px solid #ddd;
   }
   #messages {
     list-style: none;
@@ -102,17 +137,15 @@
     padding: 10px;
     margin-bottom: 5px;
     border-radius: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    word-break: break-word;
   }
   .self {
     background-color: #d1ffd6;
-    justify-content: flex-end;
+    text-align: right;
   }
   .other {
     background-color: #d6eaff;
-    justify-content: flex-start;
+    text-align: left;
   }
   form {
     display: flex;
@@ -129,37 +162,54 @@
     border-color: #2575fc;
     box-shadow: 0 0 8px #6a11cbaa;
   }
-  /* صورة دائرية جنب الاسم */
-  .avatar-small {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    cursor: pointer;
-    object-fit: cover;
-  }
-  /* مودال الصورة */
-  #modal {
+  /* مودال الإعدادات */
+  #settings-modal {
     display: none;
     position: fixed;
-    z-index: 9999;
-    left: 0; top: 0; width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.7);
-    justify-content: center;
-    align-items: center;
-  }
-  #modal img {
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+    padding: 25px 35px;
+    z-index: 1000;
+    width: 320px;
     max-width: 90%;
-    max-height: 90%;
-    border-radius: 10px;
-    box-shadow: 0 0 20px #000;
   }
-  #modal:target {
-    display: flex;
+  #settings-modal h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #6a11cb;
+  }
+  #settings-modal input[type="text"], #settings-modal select, #settings-modal input[type="file"] {
+    margin-bottom: 15px;
+  }
+  #modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    z-index: 999;
+  }
+  #close-settings {
+    background: #e74c3c;
+    margin-top: 10px;
+  }
+  #avatar-preview {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto 15px auto;
+    border: 2px solid #6a11cb;
   }
 </style>
 </head>
 <body>
 
+<!-- تسجيل الدخول -->
 <div class="container" id="login-form">
   <h1>تسجيل الدخول</h1>
   <input type="text" id="login-username" placeholder="اسم المستخدم" required />
@@ -169,54 +219,103 @@
   <p class="error" id="login-error"></p>
 </div>
 
+<!-- تسجيل حساب جديد -->
 <div class="container" id="register-form" style="display:none;">
   <h1>تسجيل حساب جديد</h1>
   <input type="text" id="register-username" placeholder="اسم المستخدم" required />
   <input type="password" id="register-password" placeholder="كلمة المرور" required />
   <input type="password" id="register-password-confirm" placeholder="تأكيد كلمة المرور" required />
+  <label>اختر صورة أفتار (اختياري):</label>
+  <input type="file" id="register-avatar" accept="image/*" />
   <button onclick="register()">سجّل</button>
   <p>هل لديك حساب؟ <a onclick="showLogin()">تسجيل دخول</a></p>
   <p class="error" id="register-error"></p>
 </div>
 
+<!-- الدردشة -->
 <div id="chat-container">
-  <h1>غرفة الدردشة</h1>
+  <div id="chat-header">
+    <img id="user-avatar" src="" alt="أفتار المستخدم" title="اضغط لتغيير الأفتار" onclick="openSettings()" />
+    <span id="username-display"></span>
+    <img id="country-flag" src="" alt="علم الدولة" title="الدولة" />
+    <button onclick="logout()" style="margin-left: auto; padding: 7px 15px; background:#e74c3c; border:none; border-radius: 15px; color:white; cursor:pointer;">تسجيل خروج</button>
+  </div>
   <ul id="messages"></ul>
   <form id="chat-form" onsubmit="sendMessage(event)">
     <input id="message" placeholder="اكتب رسالتك هنا..." autocomplete="off" required />
     <button type="submit">إرسال</button>
   </form>
-  <button onclick="logout()" style="margin-top:10px; background:#e74c3c;">تسجيل خروج</button>
 </div>
 
-<!-- مودال الصورة الكبير -->
-<div id="modal" onclick="closeModal(event)">
-  <img id="modal-img" src="" alt="صورة كبيرة" />
+<!-- مودال الإعدادات -->
+<div id="modal-overlay" onclick="closeSettings()"></div>
+<div id="settings-modal">
+  <h2>الإعدادات</h2>
+  <label>تغيير اسم المستخدم:</label>
+  <input type="text" id="settings-username" />
+  
+  <label>تغيير صورة الأفتار:</label>
+  <input type="file" id="settings-avatar" accept="image/*" />
+  <img id="avatar-preview" src="" alt="معاينة الأفتار" />
+  
+  <label>اختيار الدولة:</label>
+  <select id="settings-country">
+    <option value="">اختر الدولة</option>
+    <option value="iq" data-flag="https://flagcdn.com/iq.svg">العراق</option>
+    <option value="sa" data-flag="https://flagcdn.com/sa.svg">السعودية</option>
+    <option value="eg" data-flag="https://flagcdn.com/eg.svg">مصر</option>
+    <option value="ae" data-flag="https://flagcdn.com/ae.svg">الإمارات</option>
+    <option value="jo" data-flag="https://flagcdn.com/jo.svg">الأردن</option>
+    <option value="kw" data-flag="https://flagcdn.com/kw.svg">الكويت</option>
+    <option value="sy" data-flag="https://flagcdn.com/sy.svg">سوريا</option>
+    <option value="lb" data-flag="https://flagcdn.com/lb.svg">لبنان</option>
+    <option value="ma" data-flag="https://flagcdn.com/ma.svg">المغرب</option>
+    <option value="tn" data-flag="https://flagcdn.com/tn.svg">تونس</option>
+  </select>
+  <button onclick="saveSettings()">حفظ التغييرات</button>
+  <button id="close-settings" onclick="closeSettings()">إلغاء</button>
 </div>
 
 <script>
-  // محاكاة قاعدة بيانات باستخدام localStorage (للتجربة فقط)
-  function saveUser(username, password) {
+  // قاعدة بيانات وهمية في localStorage تخزن: المستخدمين مع كلمات السر، الأفتارات، البلد، اسم المستخدم المعدل
+  function saveUser(username, password, avatarBase64=null, country="") {
     let users = JSON.parse(localStorage.getItem("users") || "{}");
-    if(users[username]) return false;
-    // كل حساب يخزن بيانات افاتار افتراضي
-    users[username] = { password: password, avatar: 'https://i.pravatar.cc/150?u=' + username };
+    if(users[username]) return false; // موجود مسبقا
+    users[username] = {password, avatar: avatarBase64, country, displayName: username};
+    localStorage.setItem("users", JSON.stringify(users));
+    return true;
+  }
+
+  function getUser(username) {
+    let users = JSON.parse(localStorage.getItem("users") || "{}");
+    return users[username] || null;
+  }
+
+  function updateUser(username, data) {
+    let users = JSON.parse(localStorage.getItem("users") || "{}");
+    if(!users[username]) return false;
+    users[username] = {...users[username], ...data};
     localStorage.setItem("users", JSON.stringify(users));
     return true;
   }
 
   function checkUser(username, password) {
-    let users = JSON.parse(localStorage.getItem("users") || "{}");
-    return users[username] && users[username].password === password;
-  }
-
-  function getUserAvatar(username) {
-    let users = JSON.parse(localStorage.getItem("users") || "{}");
-    return users[username] ? users[username].avatar : 'https://i.pravatar.cc/150?u=default';
+    let user = getUser(username);
+    return user && user.password === password;
   }
 
   let currentUser = null;
+  let currentUserData = null;
   let messages = [];
+
+  // التحويل لbase64 لصورة الأفتار عند الرفع
+  function fileToBase64(file, callback){
+    let reader = new FileReader();
+    reader.onload = function(e) {
+      callback(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  }
 
   function showLogin() {
     document.getElementById("login-form").style.display = "block";
@@ -228,66 +327,4 @@
   function showRegister() {
     document.getElementById("login-form").style.display = "none";
     document.getElementById("register-form").style.display = "block";
-    document.getElementById("chat-container").style.display = "none";
-    clearErrors();
-  }
-
-  function clearErrors() {
-    document.getElementById("login-error").textContent = "";
-    document.getElementById("register-error").textContent = "";
-  }
-
-  function login() {
-    clearErrors();
-    let username = document.getElementById("login-username").value.trim();
-    let password = document.getElementById("login-password").value;
-    if(checkUser(username, password)){
-      currentUser = username;
-      openChat();
-    } else {
-      document.getElementById("login-error").textContent = "اسم المستخدم أو كلمة المرور خاطئة.";
-    }
-  }
-
-  function register() {
-    clearErrors();
-    let username = document.getElementById("register-username").value.trim();
-    let password = document.getElementById("register-password").value;
-    let confirmPassword = document.getElementById("register-password-confirm").value;
-
-    if(password !== confirmPassword){
-      document.getElementById("register-error").textContent = "كلمات المرور غير متطابقة.";
-      return;
-    }
-    if(!username || !password){
-      document.getElementById("register-error").textContent = "يرجى ملء جميع الحقول.";
-      return;
-    }
-    if(saveUser(username, password)){
-      alert("تم إنشاء الحساب بنجاح، يمكنك تسجيل الدخول الآن.");
-      showLogin();
-    } else {
-      document.getElementById("register-error").textContent = "اسم المستخدم موجود مسبقاً.";
-    }
-  }
-
-  function openChat(){
-    document.getElementById("login-form").style.display = "none";
-    document.getElementById("register-form").style.display = "none";
-    document.getElementById("chat-container").style.display = "flex";
-    loadMessages();
-  }
-
-  function sendMessage(e){
-    e.preventDefault();
-    let msgInput = document.getElementById("message");
-    let msg = msgInput.value.trim();
-    if(msg === "") return;
-    let messageObject = {
-      username: currentUser, 
-      message: msg,
-      avatar: getUserAvatar(currentUser)
-    };
-    messages.push(messageObject);
-    renderMessage(messageObject);
-
+    document.getElementById("chat-container").style
