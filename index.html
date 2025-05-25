@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8" />
@@ -102,14 +102,17 @@
     padding: 10px;
     margin-bottom: 5px;
     border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
   .self {
     background-color: #d1ffd6;
-    text-align: right;
+    justify-content: flex-end;
   }
   .other {
     background-color: #d6eaff;
-    text-align: left;
+    justify-content: flex-start;
   }
   form {
     display: flex;
@@ -125,6 +128,33 @@
   input#message:focus {
     border-color: #2575fc;
     box-shadow: 0 0 8px #6a11cbaa;
+  }
+  /* صورة دائرية جنب الاسم */
+  .avatar-small {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    object-fit: cover;
+  }
+  /* مودال الصورة */
+  #modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+  }
+  #modal img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #000;
+  }
+  #modal:target {
+    display: flex;
   }
 </style>
 </head>
@@ -159,22 +189,34 @@
   <button onclick="logout()" style="margin-top:10px; background:#e74c3c;">تسجيل خروج</button>
 </div>
 
+<!-- مودال الصورة الكبير -->
+<div id="modal" onclick="closeModal(event)">
+  <img id="modal-img" src="" alt="صورة كبيرة" />
+</div>
+
 <script>
   // محاكاة قاعدة بيانات باستخدام localStorage (للتجربة فقط)
   function saveUser(username, password) {
     let users = JSON.parse(localStorage.getItem("users") || "{}");
     if(users[username]) return false;
-    users[username] = password;
+    // كل حساب يخزن بيانات افاتار افتراضي
+    users[username] = { password: password, avatar: 'https://i.pravatar.cc/150?u=' + username };
     localStorage.setItem("users", JSON.stringify(users));
     return true;
   }
 
   function checkUser(username, password) {
     let users = JSON.parse(localStorage.getItem("users") || "{}");
-    return users[username] === password;
+    return users[username] && users[username].password === password;
+  }
+
+  function getUserAvatar(username) {
+    let users = JSON.parse(localStorage.getItem("users") || "{}");
+    return users[username] ? users[username].avatar : 'https://i.pravatar.cc/150?u=default';
   }
 
   let currentUser = null;
+  let messages = [];
 
   function showLogin() {
     document.getElementById("login-form").style.display = "block";
@@ -236,45 +278,16 @@
     loadMessages();
   }
 
-  let messages = [];
-
   function sendMessage(e){
     e.preventDefault();
     let msgInput = document.getElementById("message");
     let msg = msgInput.value.trim();
     if(msg === "") return;
-    let messageObject = {username: currentUser, message: msg};
+    let messageObject = {
+      username: currentUser, 
+      message: msg,
+      avatar: getUserAvatar(currentUser)
+    };
     messages.push(messageObject);
     renderMessage(messageObject);
-    msgInput.value = "";
-  }
 
-  function renderMessage(data){
-    let messagesList = document.getElementById("messages");
-    let li = document.createElement("li");
-    li.textContent = data.username + ": " + data.message;
-    li.className = data.username === currentUser ? "self" : "other";
-    messagesList.appendChild(li);
-    messagesList.scrollTop = messagesList.scrollHeight;
-  }
-
-  function loadMessages(){
-    let messagesList = document.getElementById("messages");
-    messagesList.innerHTML = "";
-    for(let msg of messages){
-      renderMessage(msg);
-    }
-  }
-
-  function logout(){
-    currentUser = null;
-    messages = [];
-    showLogin();
-  }
-
-  // بدء الصفحة مع شاشة تسجيل الدخول
-  showLogin();
-</script>
-
-</body>
-</html>
